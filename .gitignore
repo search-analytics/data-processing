@@ -1,0 +1,6 @@
+agencies/nasa/data/*
+agencies/nsf/data/*
+agencies/doe/data/*
+agencies/darpa/data/*
+agencies/ntis/data/*
+*.DS_Store
