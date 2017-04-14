@@ -1,0 +1,247 @@
+{
+	"mappings" : {
+		"research-gov" : {
+	    	"properties" : {
+	    		"award_id" : {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"organization_code" : {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"org" : {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"type" : {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"performer_district_code" : {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"program_officer" : {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+	        	"award_instrument_value": {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+	        	"abstract": {
+	        		"type" : "string"
+	        	},
+	        	"award_expiration_date": {
+	        		"type" : "date",
+	        		"format":"MM/dd/yyyy"
+	        	},
+	        	"program_reference_text": {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+	        	"investigator_firstname": {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+	        	"organization_division": {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+	        	"cfda_number": {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+	        	"po_name": {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+	        	"award_effective_date": {
+	        		"type" : "date",
+	        		"format":"MM/dd/yyyy"
+	        	},
+	        	"agency": {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+	        	"institution_state_abbr": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"institution_country": {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+	        	"investigator_email": {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+	        	"investigator_lastname": {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+				"award_title" : {
+		            "type" : "string"
+		        },
+		        "award_title_unanalyzed" : {
+		            "type" : "string",
+	        		"index":"not_analyzed"
+		        },
+		        "institution_address" : {
+		            "type" : "string",
+	        		"index":"not_analyzed"
+		        },
+		        "institution_state_abbr": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"investigator_start_date": {
+	        		"type" : "date",
+	        		"format":"MM/dd/yyyy"
+	        	},
+	        	"max_amd_letter_date": {
+	        		"type" : "date",
+	        		"format":"MM/dd/yyyy"
+	        	},
+	        	"program_element_text_unanalyzed": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"program_element_text": {
+	        		"type" : "string"
+	        	},
+	        	"organization_directorate": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"estimated_total_amount": {
+	        		"type" : "double"
+	        	},
+	        	"primary_program": {
+	        		"type" : "string"
+	        	},
+	        	"primary_program_unanalyzed": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"obligated_amount": {
+	        		"type" : "double"
+	        	},
+	        	"investigator_role_code": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"institution_state": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"investigator_role_code": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"fund_program_name": {
+	        		"type" : "string"
+	        	},
+	        	"fund_program_name_unanalyzed": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"institution_name": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"institution_zip":{
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"min_amd_letter_date": {
+	        		"type" : "date",
+	        		"format":"MM/dd/yyyy"
+	        	},
+	        	"institution_city_name": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"duns_number": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"InstructionsURL": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"investigator_fullname": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"AgencyContactInfo": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"program_element_code": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"program_url": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"award_amount": {
+	        		"type" : "long"
+	        	},
+	        	"OpeningDate": {
+	        		"type" : "date",
+	        		"format":"MM/dd/yyyy"
+	        	},
+	        	"IsMultiProject": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"effective_year": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"OfferingAgency": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"cfda_number": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"pims_id": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"FundingOpportunityTitle": {
+	        		"type" : "string"
+	        	},
+	        	"FundingOpportunityTitle_unanalyzed": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"FundingOpportunityNumber": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"ClosingDate": {
+	        		"type" : "date",
+	        		"format":"MM/dd/yyyy"
+	        	},
+	        	"CompetitionID": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"SchemaURL": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"CFDADescription": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	}
+	    	}
+		}	
+	}
+}

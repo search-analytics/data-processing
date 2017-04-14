@@ -1,170 +1,125 @@
+"""
+Build index in bulk upload format using data in JSON format. The elasticsearch mapping 
+file is used to validate and format data, and fields in input JSON should match those 
+defined in the mapping file. This script cleans, formats, and validates based on 
+fields/types defined in mapping.
+
+"""
+
+""" python3 8.build_index.py -d /users/hundman/documents/data_science/search-analytics/data-processing/agencies/nsf/data/awards/combined \
+-o /users/hundman/documents/data_science/search-analytics/data-processing/agencies/nsf/data/index/original/ -a NSF \
+-m /users/hundman/documents/data_science/search-analytics/data-processing/mappings/research-gov-mapping \
+-t research-gov
+"""
+
+
 import ujson
 import json
 from dateutil.parser import parse
+import argparse
+import os
 
-# Notes
-###########################
-# Convert country name to three letter country abbreviation
-# change facetview/kibana to use State Abbreviation
-# remove award instrument from facetview (only available for NSF)
-# Add geopoints 
-# Cat together and run cosine similarity (most similar in pool for kibana viz/table)
-basedir = os.path.join( os.path.dirname( __file__ ), '..' )
+keys_not_in_mapping = []
 
-keys = []
-
-num_or_date = ["award_expiration_date","award_effective_date","investigator_start_date", "max_amd_letter_date",
-				 "min_amd_letter_date", "OpeningDate", "ClosingDate", "estimated_total_amount", "obligated_amount",
-				 "award_amount", "institution_phone"]
-
-date = ["award_expiration_date","award_effective_date","investigator_start_date", "max_amd_letter_date",
-		"min_amd_letter_date", "OpeningDate", "ClosingDate"]
-
-with open(os.path.join(basedir, "data", "awards", "combined", "2016"), "r") as awards:
-	awards = awards.readlines()
-
-	keys = keys + ujson.loads(awards[0]).keys()
-
-with open(os.path.join(basedir, "data", "awards", "combined", "nsf_solicitations_2001-2016.json"), "r") as solicitations:
-	solicitations = solicitations.readlines()
-
-	keys =  keys + ujson.loads(solicitations[0]).keys()
-
-with open(os.path.join(basedir, "data", "index", "new", "full_index"), "w") as out:
-
-	for year in range (1980, 2017):
-
-		cnt = 0
-
-		with open(os.path.join(basedir, "data", "awards", "combined", str(year)), "r") as awards:
-
-			for award in awards:
-				award = ujson.loads(award)
-
-				header = {}
-				header["index"] = {}
-				header["index"]["_type"] = "search-analytics"
-				header["index"]["_id"] = "nsf_" + str(year) + "_" + str(cnt)
-				header["index"]["_index"] = "search-analytics"
-				out.write(json.dumps(header, encoding="utf-8", ensure_ascii=False) + "\n")
-
-				award["type"] = "award"
-				award["org"] = "NSF"
-				award["program_element_text_unanalyzed"] = award["program_element_text"]
-				award["primary_program_unanalyzed"] = award["primary_program"]
-				award["award_title_unanalyzed"] = award["award_title"]
-				award["fund_program_name_unanalyzed"] = award["fund_program_name"]
-				award["FundingOpportunityTitle_unanalyzed"] = award["FundingOpportunityTitle"]
-
-				# String due to NASA formatting
-				award["award_id"] = str(award["award_id"])
-				award["award_id"] = str(award["institution_zip"])
-
-				award["institution_name"] = award["institution_name"].lower()
+def check_args(args):
+    if args.dir == None and args.file == None:
+        raise ValueError("Please provide an input file or directory")
+    elif args.dir != None and args.file != None:
+        raise ValueError("Please provide either an input file or directory")
 
 
-				if not award["investigator_firstname"] is None and not award["investigator_lastname"] is None:
-					try:
-						award["investigator_fullname"] = (str(award["investigator_firstname"]) + " " + str(award["investigator_lastname"])).title()
-					except:
-						award["investigator_fullname"] = "n/a"
-				else:
-					award["investigator_fullname"] = "n/a"
-
-				award["effective_year"] = award["award_effective_date"].split("/")[2]
-
-				if int(award["award_effective_date"].split("/")[2]) < 1978:
-					award["award_effective_date"] = None
-
-				for key in keys:
-					if not key in award:
-						award[key] = "n/a"
-
-				for key in keys:
-					if key in num_or_date and award[key] == "n/a":
-						award[key] = None
-
-					elif key in date and award[key] != "n/a" and award[key] != None:
-						dateobj = parse(award[key])
-
-						award[key] = str(dateobj.month) + "/" + str(dateobj.day) + "/" + str(dateobj.year)
-
-				if award["award_amount"] != None:
-					award["award_amount"] = str(award["award_amount"])
-
-				out.write(ujson.dumps(award) + "\n")
-
-				cnt += 1
-
-		with open(os.path.join(basedir, "data", "awards", "combined", "nsf_solicitations_2001-2016.json"), "r") as solicitations:
-			
-			for sol in solicitations:
-				sol = ujson.loads(sol)
+def load_mapping(map_file, type):
+    with open(map_file, "r") as f:
+        return ujson.loads(f.read())["mappings"][type]["properties"]
 
 
-				if sol["ClosingDate"] != "None" and sol["ClosingDate"] != "n/a":
-					day = sol["ClosingDate"].split(",")[2].replace(")","").strip()
-					month = sol["ClosingDate"].split(",")[1].strip()
-					sol_year = sol["ClosingDate"].split(",")[0].split("(")[1].strip()
+def write_header(infile, outfile, args, cnt):
+    """Write header row"""
 
-					if len(day) == 1:
-						day = "0" + day
-
-					if len(month) == 1:
-						month = "0" + month
-					sol["ClosingDate"] = month + "/" + day + "/" + sol_year
-
-				else:
-					sol["ClosingDate"] = None
-
-				sol_year = "n/a"
-
-				if sol["OpeningDate"] != "None" and sol["OpeningDate"] != "n/a":
-
-					day = sol["OpeningDate"].split(",")[2].replace(")","").strip()
-					month = sol["OpeningDate"].split(",")[1].strip()
-					sol_year = sol["OpeningDate"].split(",")[0].split("(")[1].strip()
-
-					if len(day) == 1:
-						day = "0" + day
-
-					if len(month) == 1:
-						month = "0" + month
-					sol["OpeningDate"] = month + "/" + day + "/" + sol_year
-
-				else:
-					sol["OpeningDate"] = None
+    header = {}
+    header["index"] = {}
+    header["index"]["_type"] = args.type
+    header["index"]["_id"] = args.agency + "_" + infile + "_" + str(cnt)
+    header["index"]["_index"] = args.index
+    outfile.write(ujson.dumps(header, ensure_ascii=False) + "\n")
 
 
-				header = {}
-				header["index"] = {}
-				header["index"]["_type"] = "search-analytics"
-				header["index"]["_id"] = str(year) + "_" + str(cnt)
-				header["index"]["_index"] = "search-analytics"
-				out.write(ujson.dumps(header) + "\n")		
+def process_json(infile, outfile, args, mapping):
+    cnt = 0
+    with open(os.path.join(args.dir, infile), "r") as f:
+        docs = f.readlines()
+        for doc in docs:
+            doc = ujson.loads(doc)
 
-				sol["type"] = "solicitation"
-				sol["org"] = "NSF"
-				sol["program_url"] = sol["url"]
-				sol["cfda_number"] = sol["CFDANumber"]
-				sol["abstract"] = sol["synopsis"]
-				sol["effective_year"] = year
+            write_header(infile, outfile, args, cnt)
 
-				sol["FundingOpportunityTitle_unanalyzed"] = sol["FundingOpportunityTitle"]
+            new_doc = {}
+            for key, value in doc.items():
+                if key in mapping:
+                    if mapping[key]["type"] == "string" and key != "abstract": # lowercase everything except the abstract
+                        new_doc[key] = str(doc[key]).lower()
+                    elif mapping[key]["type"] in ["long"]: # Must convert nums to string in order for elasticsearch to cast to long
+                        new_doc[key] = str(doc[key])
+                    elif mapping[key]["type"] == "date":
+                        dateobj = parse(doc[key])
+                        new_doc[key] = str(dateobj.month) + "/" + str(dateobj.day) + "/" + str(dateobj.year)
+
+                    # For faceting on year. Should be general field found in most data sources.
+                    if key == "award_effective_date":
+                        new_doc["effective_year"] = doc["award_effective_date"].split("/")[2]
+
+                    # Combine investigator fields into one name
+                    if not doc["investigator_firstname"] is None and not doc["investigator_lastname"] is None:
+                        try:
+                            new_doc["investigator_fullname"] = (str(doc["investigator_firstname"]) + " " + str(doc["investigator_lastname"])).title()
+                        except:
+                            new_doc["investigator_fullname"] = "n/a"
+                    else:
+                        new_doc["investigator_fullname"] = "n/a"
 
 
-				sol.pop('url', None)
-				sol.pop('CFDANumber', None)
-				sol.pop('synopsis', None)
+                elif not key in keys_not_in_mapping:
+                    keys_not_in_mapping.append(key)
 
-				for key in keys:
-					if not key in sol:
-						sol[key] = "n/a"
+            for key, value in mapping.items():
+                if not key in doc:
+                    if not "_unanalyzed" in key: 
+                        if value["type"] == "string":
+                            new_doc[key] = "n/a"
+                        else:
+                            new_doc[key] = None
+                else:
+                    new_doc[key] = doc[key.replace("_unanalyzed","")]   # add unanalyzed fields when specified in mapping file
 
-				for key in keys:
-					if key in num_or_date and sol[key] == "n/a":
-						sol[key] = None
+            outfile.write(ujson.dumps(new_doc) + "\n")
 
-				out.write(ujson.dumps(sol) + "\n")
+            cnt += 1 
 
-				cnt += 1
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='To index the award info to ElasticSearch')
+    parser.add_argument('-f', '--file', help='File containing JSON to be converted to bulk index format')
+    parser.add_argument('-d', '--dir', help='Directory containing JSON files to be converted into bulk index format')
+    parser.add_argument('-o', '--output_dir', help='Directory to place bulk-formatted index in')
+    parser.add_argument('-a', '--agency', help='Data for which agency?')
+    parser.add_argument('-m', '--mapping', help='Elasticsearch mapping file location')
+    parser.add_argument('-i', '--index', help='Elasticsearch index name')
+    parser.add_argument('-t', '--type', help='Elasticsearch type name')
+
+    args = parser.parse_args()
+
+    mapping = load_mapping(args.mapping, args.type)
+    check_args(args)
+
+    with open(os.path.join(args.output_dir, args.agency + "_index"), "w") as out:
+
+        if args.dir != None:
+            files = os.listdir(args.dir)        
+            for file in files:
+                process_json(file, out, args, mapping)
+
+        else:
+            process_json(args.file, out, args, mapping)
+
+    print("Keys found in data but not in mapping: " + str(keys_not_in_mapping))
+        

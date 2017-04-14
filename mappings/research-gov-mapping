@@ -1,0 +1,102 @@
+{
+	"mappings" : {
+		"research-gov" : {
+	    	"properties" : {
+	    		"institution_name": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"institution_name_unanalyzed": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"investigator_fullname": {
+	        		"type" : "string"
+	        	},
+	        	"investigator_fullname_unanalyzed": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"award_amount": {
+	        		"type" : "long"
+	        	},
+	        	"award_effective_date": {
+	        		"type" : "date",
+	        		"format":"MM/dd/yyyy"
+	        	},
+	        	"award_expiration_date": {
+	        		"type" : "date",
+	        		"format":"MM/dd/yyyy"
+	        	},
+	        	"agency": {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+	        	"OfferingAgency": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"cfda_number": {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+	        	"award_title" : {
+		            "type" : "string"
+		        },
+		        "award_title_unanalyzed" : {
+		            "type" : "string",
+	        		"index":"not_analyzed"
+		        },
+		        "award_id" : {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"duns_number": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"fund_program_name": {
+	        		"type" : "string"
+	        	},
+	        	"fund_program_name_unanalyzed": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"primary_program": {
+	        		"type" : "string"
+	        	},
+	        	"primary_program_unanalyzed": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"program_officer" : {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+	        	"institution_city_name": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"institution_state": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"institution_state_abbr": {
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"institution_zip":{
+	        		"type" : "string", 
+	        		"index":"not_analyzed"
+	        	},
+	        	"institution_country": {
+	        		"type" : "string",
+	        		"index":"not_analyzed"
+	        	},
+	        	"abstract": {
+	        		"type" : "string"
+	        	}
+	    	}
+		}	
+	}
+}
